@@ -925,10 +925,6 @@ function switchView(v) {
   if (v === 'asignacion') renderAsign();
   if (v === 'consola') { renderConsoleTabs(); termBanner(); renderPlan(); $('#term-prompt').textContent = `Router_${state.console.router}#`; }
   if (v === 'aprender') renderLearnList();
-  /* en móvil cada vista arranca desde arriba, como una pantalla de app */
-  if (window.matchMedia('(max-width:1080px)').matches) {
-    const vEl = document.getElementById('view-' + v); if (vEl) vEl.scrollTop = 0;
-  }
   updateStats();
   setStatus('listo');
 }
@@ -1656,10 +1652,6 @@ function openLesson(id) {
   $$('#learn-main [data-goto]').forEach(b => b.onclick = () => switchView(b.dataset.goto));
   openQ = 0; renderQuiz();
   updateStats();
-  /* la lección siempre se abre desde su título, aunque vengas de abajo del carrusel */
-  if (window.matchMedia('(max-width:1080px)').matches) {
-    const vEl = document.getElementById('view-aprender'); if (vEl) vEl.scrollTop = 0;
-  }
 }
 function renderQuiz() {
   const L = LESSONS.find(x => x.id === learnCur);
@@ -1821,9 +1813,6 @@ function openExam() {
     <div id="exam-area"></div>
   </div>`;
   examIntro(); updateStats();
-  if (window.matchMedia('(max-width:1080px)').matches) {
-    const vEl = document.getElementById('view-aprender'); if (vEl) vEl.scrollTop = 0;
-  }
 }
 function examIntro() {
   const best = examBest >= 0 ? `${examBest}/${EXAM_N} (${Math.round(examBest / EXAM_N * 100)} %)` : 'sin intentos';

@@ -23,7 +23,6 @@ body{
   color:var(--txt);
   font:14px/1.45 "Segoe UI",Inter,system-ui,-apple-system,sans-serif;
   overflow:hidden;
-  touch-action:manipulation;   /* sin retardo ni zoom de doble toque en móvil */
 }
 ::-webkit-scrollbar{width:10px;height:10px}
 ::-webkit-scrollbar-thumb{background:#2b3245;border-radius:6px;border:2px solid transparent;background-clip:content-box}
@@ -61,8 +60,6 @@ code{font-family:var(--mono);background:#0d1017;border:1px solid var(--line);pad
 .rail-btn:hover svg{stroke:#aab2c8}
 .rail-btn.active{background:#1d2230;border-color:#2c3346}
 .rail-btn.active svg{stroke:var(--accent)}
-.rail-btn span{display:none}   /* etiquetas: solo se muestran en la barra móvil */
-button{-webkit-tap-highlight-color:transparent}
 
 /* ---------- main ---------- */
 .main{display:flex;flex-direction:column;min-width:0}
@@ -496,14 +493,8 @@ td .pill{
     border-right:none;border-bottom:1px solid var(--line);
     overflow-x:auto;-webkit-overflow-scrolling:touch;
   }
-  .rail-logo{display:none}   /* con etiquetas ya no cabe el logo: 6 botones repartidos */
-  .rail .rail-btn{
-    width:auto;height:auto;flex:1 1 0;min-width:0;min-height:54px;
-    flex-direction:column;gap:3px;padding:7px 2px;
-  }
-  .rail-btn svg{width:20px;height:20px}
-  .rail-btn span{display:block;font-size:9.5px;font-weight:600;letter-spacing:.3px;color:#79809a}
-  .rail-btn.active span{color:var(--accent)}
+  .rail-logo{margin-bottom:0;margin-right:4px;flex:0 0 auto}
+  .rail .rail-btn{width:44px;height:44px;flex:0 0 auto}   /* táctil cómodo */
   .topbar{display:none}               /* la cabecera ahora es la barra superior */
   /* sin panel lateral: ancho completo y sin hueco bajo (no hay hoja que plegar) */
   .app.side-off{grid-template-columns:1fr}
@@ -547,78 +538,14 @@ td .pill{
   input,select,textarea{font-size:16px!important}
 
   /* aire y tipografía — un solo scroll vertical para toda la vista */
-  .view{padding:18px 14px 44px;-webkit-overflow-scrolling:touch;overscroll-behavior-y:contain}
-  .hero h1{font-size:24px}
-  .hero p{font-size:14px}
+  .view{padding:18px 14px 44px;-webkit-overflow-scrolling:touch}
+  .hero h1{font-size:26px}
   .stat b{font-size:15px}
   /* sin altura máxima: la tabla fluye con la página y solo rola en horizontal
      (antes había scroll anidado y "se trababa" el deslizamiento táctil) */
   .table-wrap{max-height:none;-webkit-overflow-scrolling:touch}
   .topo-canvas{-webkit-overflow-scrolling:touch}
   .term{overscroll-behavior:contain;-webkit-overflow-scrolling:touch}
-
-  /* ===== BUGFIX + curso estilo app =====
-     El .learn-list sticky de PC tapaba la lección en el teléfono:
-     en móvil el menú deja de ser sticky y las lecciones pasan a un
-     carrusel fijo arriba (la tira .learn-nav sí se queda pegada). */
-  .learn-grid{display:flex;flex-direction:column}
-  /* el aside se "disuelve": progreso y tira de lecciones fluyen como bloques sueltos,
-     así la tira sí se queda pegada durante TODA la lectura (no solo 200px) */
-  .learn-list{display:contents}
-  .learn-progress{
-    display:flex;flex-wrap:wrap;align-items:center;gap:6px 10px;text-align:left;
-    background:var(--panel);border:1px solid var(--line);border-radius:14px;padding:12px 14px;
-  }
-  .learn-progress b{font-size:22px}
-  .learn-progress span{font-size:9px}
-  .learn-progress .lp-bar{flex:1 1 140px;margin-top:0}
-  .learn-progress small{margin-top:0}
-  .learn-reset{margin:0 0 0 auto}
-  .learn-nav{
-    position:sticky;top:0;z-index:5;
-    margin:10px -14px 0;padding:8px 14px;
-    background:#0b0d13;border-bottom:1px solid var(--line);
-  }
-  #learn-items{
-    display:flex;gap:8px;overflow-x:auto;padding:2px;
-    scroll-snap-type:x proximity;-webkit-overflow-scrolling:touch;
-  }
-  #learn-items .lvl-h{display:none}   /* el número de la tarjeta ya ubica la lección */
-  #learn-items .lit{
-    flex:0 0 auto;scroll-snap-align:start;
-    max-width:230px;margin-bottom:0;min-height:48px;align-items:center;
-    background:var(--panel2);border-color:var(--line2);
-  }
-  #learn-items .lit .t{white-space:nowrap;overflow:hidden;text-overflow:ellipsis}
-  #learn-items .lit .st{font-size:13px}
-
-  /* ===== lectura y quiz a dedo ===== */
-  .lesson{padding:16px 15px}
-  .lesson-head h2{font-size:20px}
-  .lesson p,.lesson li{font-size:15px;line-height:1.65}
-  .callout{font-size:14px}
-  .quiz{padding:14px}
-  .quiz-q{font-size:16px}
-  .opt{padding:13px 14px;font-size:15px;min-height:50px}
-  .quiz-row{flex-direction:column;align-items:stretch}
-  .quiz-row .btn{width:100%;min-height:50px;font-size:15px}
-  .lesson-done .btn{min-height:50px;font-size:15px}
-  .exam-nav .btn{flex:1 1 100%;min-height:50px}
-  .es-num{font-size:36px}
-
-  /* ===== formularios apilados a ancho completo ===== */
-  .fields{gap:10px}
-  .field{flex:1 1 100%}
-  .field input,.field select{width:100%}
-  .field-class .class-chips{max-width:280px}
-
-  /* ===== consola: pestañas deslizables ===== */
-  .term-tabs{overflow-x:auto;padding-bottom:4px;-webkit-overflow-scrolling:touch}
-  .term-tabs button{flex:0 0 auto;min-height:44px;padding:8px 16px}
-
-  /* ===== remate nativo: notch y bordes seguros ===== */
-  .rail{padding-top:calc(8px + env(safe-area-inset-top))}
-  .statusbar{padding-bottom:calc(7px + env(safe-area-inset-bottom))}
 }
 
 /* ---------- chips de clase (cl�sico + creador) ---------- */
