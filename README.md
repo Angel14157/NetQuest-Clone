@@ -20,11 +20,12 @@ Réplica funcional de **NetQuest** (herramienta de subnetting de la uni) convert
 ```
 NetQuest-Clone/
 ├── index.html        6 vistas + panel derecho + creador de ejercicios
-├── styles.css        tema oscuro · breakpoints: 1240 / 1080 (hoja móvil) / 900 / 760 (builder)
+├── styles.css        tema oscuro · breakpoints: 1240 / 1080 (rail arriba + hoja inferior) / 900 / 760 (builder)
 ├── app.js            toda la lógica (ver mapa abajo)
 ├── manifest.json     PWA: nombre, iconos, display standalone
 ├── sw.js             service worker: offline + actualización en 2 planos
-└── icons/            icon-192 · icon-512 · icon-maskable-512 (◈ ámbar)
+├── icons/            icon-192 · icon-512 · icon-maskable-512 (◈ ámbar)
+└── android/          proyecto Android Studio (APK) — ver sección Android
 ```
 
 ### Mapa de `app.js`
@@ -111,9 +112,27 @@ const ANIMS = {
 
 - `manifest.json` + `sw.js` + `icons/` → en Chrome Android: **menú → "Agregar a pantalla de inicio"**.
   Funciona offline y se ve como app (standalone).
-- Para el **APK con Android Studio** (WebView cargando `file:///android_asset/index.html`):
-  ⚠️ **no convertir `app.js` a módulos ES** (romperían en `file://`); mantener JS clásico.
-- `sw.js` solo tiene efecto sobre http/https (GitHub Pages o localhost).
+- ⚠️ **No convertir `app.js` a módulos ES** (rompen en `file://`, que es como el APK carga la app).
+- `sw.js` solo tiene efecto sobre http/https (GitHub Pages o localhost) — dentro del APK no aplica.
+
+### 🤖 APK (carpeta `android/`)
+
+Proyecto **Android Studio** (WebView que carga `file:///android_asset/index.html`, sin permisos,
+100 % offline). AGP 9.3.1 · Gradle 9.5 · minSdk 24 · targetSdk 36.
+
+**Compilar:**
+
+1. Abre la carpeta `android/` en Android Studio (Open).
+2. Espera el *Gradle sync* la primera vez (descarga Gradle y dependencias).
+3. **Build → Build APK(s)**.
+4. El APK queda en `android/app/build/outputs/apk/debug/app-debug.apk` (firmado con debug → instalable directo).
+
+**Instalar en el celular:** copia el `.apk` al teléfono (USB/WhatsApp/Drive) y ábrelo →
+permite instalación de orígenes desconocidos cuando lo pida.
+
+> La tarea `syncAppAssets` copia `index.html`, `styles.css`, `app.js`, `manifest.json`, `sw.js`
+> e `icons/` desde la raíz del repo en **cada build**: editas la web → recompilar → el APK
+> trae los cambios. Sin copias manuales.
 
 ---
 

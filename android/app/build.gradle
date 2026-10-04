@@ -1,0 +1,45 @@
+plugins {
+    id 'com.android.application'
+}
+
+android {
+    namespace 'com.angel14157.netquest'
+    compileSdk 36
+
+    defaultConfig {
+        applicationId "com.angel14157.netquest"
+        minSdk 24
+        targetSdk 36
+        versionCode 1
+        versionName "1.0"
+    }
+
+    buildTypes {
+        release {
+            minifyEnabled false
+            // firmado con el keystore de debug para poder instalar el APK directo
+            signingConfig signingConfigs.debug
+        }
+    }
+
+    compileOptions {
+        sourceCompatibility JavaVersion.VERSION_17
+        targetCompatibility JavaVersion.VERSION_17
+    }
+}
+
+/* ------------------------------------------------------------------
+   Sincroniza la app web (raíz del repo) hacia assets en cada build.
+   Así, al editar index.html / styles.css / app.js en la raíz del repo,
+   recompilar el APK ya incluye los cambios — sin copias manuales.
+   ------------------------------------------------------------------ */
+tasks.register('syncAppAssets', Sync) {
+    from("${projectDir}/../..") {
+        include 'index.html', 'styles.css', 'app.js', 'manifest.json', 'sw.js', 'icons/**'
+    }
+    into "${projectDir}/src/main/assets"
+}
+
+afterEvaluate {
+    preBuild.dependsOn 'syncAppAssets'
+}

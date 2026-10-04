@@ -12,3 +12,12 @@ Desktop.ini
 *.log
 *.tmp
 .cache/
+
+# Android (proyecto APK)
+android/.gradle/
+android/build/
+android/app/build/
+android/local.properties
+android/app/src/main/assets/   # generado por la tarea syncAppAssets
+android/.idea/
+*.apk

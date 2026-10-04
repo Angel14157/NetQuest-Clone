@@ -31,7 +31,11 @@ body{
 code{font-family:var(--mono);background:#0d1017;border:1px solid var(--line);padding:1px 6px;border-radius:5px;color:var(--accent2)}
 
 /* ---------- layout ---------- */
-.app{display:grid;grid-template-columns:58px 1fr 306px;height:100vh}
+.app{
+  display:grid;grid-template-columns:58px 1fr 306px;
+  grid-template-rows:minmax(0,1fr);   /* acota .main → .view scrollea de verdad */
+  height:100vh;overflow:hidden;
+}
 
 /* ---------- rail ---------- */
 .rail{
@@ -466,15 +470,28 @@ td .pill{
 
 /* ---------- móvil / tablet: el panel derecho pasa a hoja inferior ---------- */
 @media (max-width:1080px){
-  .app{grid-template-columns:58px 1fr}
+  /* navegación: rail lateral → barra superior horizontal */
+  .app{
+    grid-template-columns:1fr;
+    grid-template-rows:auto minmax(0,1fr);
+    height:100vh;height:100dvh;        /* se adapta a la barra dinámica de Chrome */
+  }
+  .rail{
+    flex-direction:row;align-items:center;justify-content:flex-start;
+    gap:6px;padding:8px 10px;
+    border-right:none;border-bottom:1px solid var(--line);
+    overflow-x:auto;-webkit-overflow-scrolling:touch;
+  }
+  .rail-logo{margin-bottom:0;margin-right:4px;flex:0 0 auto}
+  .rail-btn{width:44px;height:44px;flex:0 0 auto}   /* táctil cómodo */
+  .topbar{display:none}               /* la cabecera ahora es la barra superior */
 
   .side{
-    position:fixed;left:58px;right:0;bottom:0;top:auto;
+    position:fixed;left:0;right:0;bottom:0;top:auto;
     height:auto;max-height:78vh;z-index:60;
     border-left:none;border-top:1px solid var(--line);
     border-radius:16px 16px 0 0;
-    background:rgba(14,17,23,.97);
-    backdrop-filter:blur(10px);-webkit-backdrop-filter:blur(10px);
+    background:#0e1117;               /* opaco: sin backdrop-filter = desliza fluido */
     box-shadow:0 -14px 44px rgba(0,0,0,.55);
     padding:0 12px 14px;gap:12px;
     transform:translateY(calc(100% - 56px));
@@ -506,11 +523,15 @@ td .pill{
   /* Chrome móvil hace zoom automático con fuentes <16px */
   input,select,textarea{font-size:16px!important}
 
-  /* aire y tipografía */
-  .view{padding:18px 14px 34px}
+  /* aire y tipografía — un solo scroll vertical para toda la vista */
+  .view{padding:18px 14px 44px;-webkit-overflow-scrolling:touch}
   .hero h1{font-size:26px}
   .stat b{font-size:15px}
-  .table-wrap{max-height:60vh}
+  /* sin altura máxima: la tabla fluye con la página y solo rola en horizontal
+     (antes había scroll anidado y "se trababa" el deslizamiento táctil) */
+  .table-wrap{max-height:none;-webkit-overflow-scrolling:touch}
+  .topo-canvas{-webkit-overflow-scrolling:touch}
+  .term{overscroll-behavior:contain;-webkit-overflow-scrolling:touch}
 }
 
 /* ---------- chips de clase (cl�sico + creador) ---------- */
