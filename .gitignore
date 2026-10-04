@@ -18,6 +18,7 @@ android/.gradle/
 android/build/
 android/app/build/
 android/local.properties
-android/app/src/main/assets/   # generado por la tarea syncAppAssets
+# generado por la tarea syncAppAssets (copias de la web dentro del APK)
+android/app/src/main/assets/
 android/.idea/
 *.apk
