@@ -509,7 +509,7 @@ td .pill{
   .app.side-off{grid-template-columns:1fr}
 
   .side{
-    position:fixed;left:0;right:0;bottom:0;top:auto;
+    position:fixed;left:0;right:0;bottom:var(--nq-inset-bottom,0px);top:auto;
     height:auto;max-height:78vh;z-index:60;
     border-left:none;border-top:1px solid var(--line);
     border-radius:16px 16px 0 0;

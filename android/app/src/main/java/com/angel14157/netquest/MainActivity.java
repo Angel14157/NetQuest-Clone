@@ -18,6 +18,7 @@ import android.webkit.WebViewClient;
 public class MainActivity extends Activity {
 
     private WebView web;
+    private int inLeft, inTop, inRight, inBottom;   // últimos insets del sistema, en px
 
     @SuppressLint("SetJavaScriptEnabled")
     @Override
@@ -45,6 +46,7 @@ public class MainActivity extends Activity {
                 // la web sabe qué APK la ejecuta (si no hay función, es la PWA y no hace nada)
                 view.evaluateJavascript(
                         "window.__nqApkVer&&window.__nqApkVer('" + BuildConfig.VERSION_NAME + "')", null);
+                pushInsets();   // re-aplica el margen: la página acaba de cargarse
             }
         });
 
@@ -83,9 +85,25 @@ public class MainActivity extends Activity {
             // piso de seguridad: en modo gestos el indicador SIEMPRE se dibuja
             // aunque el sistema reporte 0 — nunca se reserva menos que eso.
             int floor = (int) (32 * getResources().getDisplayMetrics().density);
-            web.setPadding(m.left, m.top, m.right, Math.max(Math.max(bottom, ime.bottom), floor));
+            inLeft = m.left; inTop = m.top; inRight = m.right;
+            inBottom = Math.max(Math.max(bottom, ime.bottom), floor);
+            pushInsets();
             return insets;
         });
+    }
+
+    /**
+     * Aplica el margen inferior por DOS vías:
+     *  - padding al WebView → alcanza al contenido normal (tabla, formularios);
+     *  - variable CSS --nq-inset-bottom → alcanza a los elementos position:fixed
+     *    (la hoja inferior), que el padding NO mueve: se ancla a la ventana y
+     *    quedaba debajo de los botones de navegación del sistema.
+     */
+    private void pushInsets() {
+        web.setPadding(inLeft, inTop, inRight, inBottom);
+        float dp = inBottom / getResources().getDisplayMetrics().density;   // px → CSS px
+        web.evaluateJavascript(
+                "document.documentElement.style.setProperty('--nq-inset-bottom','" + dp + "px')", null);
     }
 
     /** Altura declarada de la barra de navegación en el recurso del sistema (puede ser 0). */
