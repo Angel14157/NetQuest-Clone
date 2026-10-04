@@ -824,6 +824,8 @@ function runCommand(raw) {
   ip address &lt;if&gt; &lt;ip/prefijo&gt;   direccionar una interfaz
   no ip address &lt;if&gt;             quitar la dirección
   verificar                      comprueba el direccionamiento
+  solucion                       rellena todas las interfaces con la respuesta
+  reiniciar                      borra el direccionamiento (nueva consola)
   limpiar                        limpia la consola`);
   }
   else if (low === 'interfaces' || low === 'show') {
@@ -836,6 +838,8 @@ function runCommand(raw) {
   }
   else if (low === 'limpiar' || low === 'clear') { $('#term-out').innerHTML = ''; termBanner(); }
   else if (low === 'verificar' || low === 'check') consoleVerify();
+  else if (low === 'solucion' || low === 'solution') solutionConsole();
+  else if (low === 'reiniciar' || low === 'reset') resetConsole();
   else if (low === 'no' && (args[0] || '').toLowerCase() === 'ip' && (args[1] || '').toLowerCase() === 'address') {
     const list = interfacesFor(r, t);
     const item = list.find(x => x.iface.toLowerCase() === (args[2] || '').toLowerCase());
@@ -909,6 +913,8 @@ const VIEW_META = {
 };
 function switchView(v) {
   state.view = v;
+  /* panel derecho solo en los 3 ejercicios: en consola/aprender/acerca estorba */
+  $('.app').classList.toggle('side-off', v === 'consola' || v === 'aprender' || v === 'acerca');
   $$('.rail-btn').forEach(b => b.classList.toggle('active', b.dataset.view === v));
   $$('.view').forEach(s => s.classList.toggle('hidden', s.id !== 'view-' + v));
   $('#topbar-meta').textContent = VIEW_META[v].label;
@@ -983,6 +989,13 @@ function init() {
   $('#btn-solucion').onclick = solutionCurrent;
   $('#btn-nueva').onclick = nuevaCurrent;
   $('#side-toggle').onclick = () => openSide(!$('.side').classList.contains('open'));
+  /* reinicio del curso (antes vivía en el panel lateral, que ahora solo se ve en los ejercicios) */
+  $('#learn-reset').onclick = () => {
+    learnDone = []; saveLearn(); learnCur = null;
+    examBest = -1; saveExam(); examState = null;
+    resetLearnMain(); renderLearnList(); updateStats();
+    setStatus('progreso y examen reiniciados');
+  };
 
   $$('#diff-tabs button').forEach(b => b.onclick = () => {
     $$('#diff-tabs button').forEach(x => x.classList.remove('active'));
@@ -1649,7 +1662,10 @@ function renderQuiz() {
     <div class="quiz-head">Ejercicio · pregunta ${openQ + 1} de ${L.quiz.length}</div>
     <div class="quiz-q">${q.q}</div>
     <div class="quiz-opts">${q.opts.map((o, i) => `<button class="opt" data-i="${i}">${o}</button>`).join('')}</div>
-    <button class="btn primary" id="quiz-go">Comprobar</button>
+    <div class="quiz-row">
+      <button class="btn primary" id="quiz-go">Comprobar</button>
+      <button class="btn" id="quiz-hint">💡 Pista</button>
+    </div>
     <div class="quiz-fb" id="quiz-fb"></div>`;
   $$('#quiz .opt').forEach(b => b.onclick = () => {
     $$('#quiz .opt').forEach(x => x.classList.remove('sel'));
@@ -1657,6 +1673,11 @@ function renderQuiz() {
     $('#quiz-fb').textContent = '';
   });
   $('#quiz-go').onclick = checkQuiz;
+  $('#quiz-hint').onclick = () => {
+    const fb = $('#quiz-fb');
+    fb.className = 'quiz-fb hint';
+    fb.innerHTML = `💡 ${L.hint}<span class="why">Revisa la lección y vuelve a intentarlo.</span>`;
+  };
 }
 function checkQuiz() {
   const L = LESSONS.find(x => x.id === learnCur);

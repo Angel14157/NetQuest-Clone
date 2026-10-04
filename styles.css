@@ -36,6 +36,10 @@ code{font-family:var(--mono);background:#0d1017;border:1px solid var(--line);pad
   grid-template-rows:minmax(0,1fr);   /* acota .main → .view scrollea de verdad */
   height:100vh;overflow:hidden;
 }
+/* panel derecho solo en los ejercicios (clasico/topologia/asignacion);
+   en consola/aprender/acerca se ocupa todo el ancho */
+.app.side-off{grid-template-columns:58px 1fr}
+.app.side-off .side{display:none}
 
 /* ---------- rail ---------- */
 .rail{
@@ -239,6 +243,11 @@ td .pill{
 .learn-progress b{display:block;font-size:26px;color:var(--accent);font-family:var(--mono)}
 .learn-progress span{font-size:9.5px;letter-spacing:1.2px;color:var(--muted)}
 .learn-progress small{display:block;margin-top:6px;color:var(--muted);font-size:11px}
+.learn-reset{
+  display:block;margin:10px auto 0;background:none;border:1px solid var(--line2);
+  color:var(--muted);font-size:11px;cursor:pointer;padding:5px 10px;border-radius:8px;transition:.13s;
+}
+.learn-reset:hover{color:var(--accent);border-color:#465070;background:#161b28}
 .lp-bar{height:7px;background:#0e1118;border:1px solid var(--line2);border-radius:6px;margin-top:9px;overflow:hidden}
 .lp-bar i{display:block;height:100%;background:linear-gradient(90deg,#8a6d1f,var(--accent));transition:.4s}
 .lvl-h{font-size:10px;letter-spacing:1.1px;color:var(--muted);margin:12px 0 6px;font-weight:700;text-transform:uppercase}
@@ -387,7 +396,9 @@ td .pill{
 .quiz-fb{margin-top:11px;font-size:13.4px;min-height:20px}
 .quiz-fb.ok{color:var(--ok)}
 .quiz-fb.err{color:var(--err)}
+.quiz-fb.hint{color:#a9b1c4}
 .quiz-fb .why{color:#a9b1c4;display:block;margin-top:5px}
+.quiz-row{display:flex;gap:8px;align-items:center;flex-wrap:wrap}
 .lesson-done{
   background:linear-gradient(180deg,#12201a,#0f1a15);border:1px solid #2f6b45;border-radius:11px;
   padding:14px 16px;margin-top:14px;text-align:center;
@@ -483,8 +494,11 @@ td .pill{
     overflow-x:auto;-webkit-overflow-scrolling:touch;
   }
   .rail-logo{margin-bottom:0;margin-right:4px;flex:0 0 auto}
-  .rail-btn{width:44px;height:44px;flex:0 0 auto}   /* táctil cómodo */
+  .rail .rail-btn{width:44px;height:44px;flex:0 0 auto}   /* táctil cómodo */
   .topbar{display:none}               /* la cabecera ahora es la barra superior */
+  /* sin panel lateral: ancho completo y sin hueco bajo (no hay hoja que plegar) */
+  .app.side-off{grid-template-columns:1fr}
+  .app.side-off .statusbar{margin-bottom:0}
 
   .side{
     position:fixed;left:0;right:0;bottom:0;top:auto;
