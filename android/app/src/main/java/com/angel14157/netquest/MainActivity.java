@@ -38,7 +38,15 @@ public class MainActivity extends Activity {
         s.setMediaPlaybackRequiresUserGesture(false);
 
         web.setBackgroundColor(0xFF0B0D13);       // fondo oscuro al arrancar (sin "flash" blanco)
-        web.setWebViewClient(new WebViewClient());
+        web.setWebViewClient(new WebViewClient() {
+            @Override
+            public void onPageFinished(WebView view, String url) {
+                super.onPageFinished(view, url);
+                // la web sabe qué APK la ejecuta (si no hay función, es la PWA y no hace nada)
+                view.evaluateJavascript(
+                        "window.__nqApkVer&&window.__nqApkVer('" + BuildConfig.VERSION_NAME + "')", null);
+            }
+        });
 
         applySystemInsets();
 
@@ -67,10 +75,15 @@ public class MainActivity extends Activity {
             int bottom = m.bottom;
             if (bottom == 0) bottom = insets.getStableInsetBottom();
             if (bottom == 0) bottom = navBarHeight();
+            // región real de gestos de la pantalla (ColorOS a veces solo reporta esta)
+            if (bottom == 0) bottom = insets.getInsets(WindowInsets.Type.systemGestures()).bottom;
             // margen por barras y, si está abierto, por el teclado:
             // así ningún botón ni input queda debajo de nada.
             Insets ime = insets.getInsets(WindowInsets.Type.ime());
-            web.setPadding(m.left, m.top, m.right, Math.max(bottom, ime.bottom));
+            // piso de seguridad: en modo gestos el indicador SIEMPRE se dibuja
+            // aunque el sistema reporte 0 — nunca se reserva menos que eso.
+            int floor = (int) (32 * getResources().getDisplayMetrics().density);
+            web.setPadding(m.left, m.top, m.right, Math.max(Math.max(bottom, ime.bottom), floor));
             return insets;
         });
     }

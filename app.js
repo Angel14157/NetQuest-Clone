@@ -911,6 +911,11 @@ const VIEW_META = {
   aprender:   { label: 'aprender: de cero a avanzado',    nueva: 'Reiniciar progreso' },
   acerca:     { label: 'acerca de NetQuest',             nueva: 'Nuevo reto' },
 };
+/* El APK inyecta su versión al terminar de cargar (la PWA no la tiene y no muestra nada). */
+window.__nqApkVer = v => {
+  const e = document.getElementById('apk-line');
+  if (e) { e.textContent = 'APK ' + v; e.classList.remove('hidden'); }
+};
 function switchView(v) {
   state.view = v;
   /* panel derecho solo en los 3 ejercicios: en consola/aprender/acerca estorba */
