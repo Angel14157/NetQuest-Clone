@@ -1,0 +1,19 @@
+{
+  "name": "NetQuest — Subnetting y VLSM",
+  "short_name": "NetQuest",
+  "description": "Ejercicios de subnetting IPv4, VLSM, consola de routers tipo Cisco y curso interactivo de redes de cero a avanzado.",
+  "lang": "es",
+  "dir": "ltr",
+  "start_url": "./",
+  "scope": "./",
+  "id": "netquest",
+  "display": "standalone",
+  "orientation": "any",
+  "background_color": "#0b0d13",
+  "theme_color": "#0b0d13",
+  "icons": [
+    { "src": "icons/icon-192.png", "sizes": "192x192", "type": "image/png" },
+    { "src": "icons/icon-512.png", "sizes": "512x512", "type": "image/png" },
+    { "src": "icons/icon-maskable-512.png", "sizes": "512x512", "type": "image/png", "purpose": "maskable" }
+  ]
+}

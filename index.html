@@ -1,0 +1,325 @@
+<!DOCTYPE html>
+<html lang="es">
+<head>
+<meta charset="UTF-8">
+<meta name="viewport" content="width=device-width, initial-scale=1.0, viewport-fit=cover">
+<meta name="theme-color" content="#0b0d13">
+<meta name="mobile-web-app-capable" content="yes">
+<meta name="apple-mobile-web-app-capable" content="yes">
+<meta name="apple-mobile-web-app-status-bar-style" content="black-translucent">
+<link rel="manifest" href="manifest.json">
+<link rel="apple-touch-icon" href="icons/icon-192.png">
+<title>NetQuest — Subnetting clásico y VLSM</title>
+<link rel="stylesheet" href="styles.css">
+</head>
+<body>
+<div class="app">
+
+  <!-- ============ RAIL LATERAL ============ -->
+  <aside class="rail">
+    <div class="rail-logo" title="NetQuest">◈</div>
+    <button class="rail-btn active" data-view="clasico" title="Subnetting clásico">
+      <svg viewBox="0 0 24 24"><rect x="3" y="3" width="7" height="7" rx="1.5"/><rect x="14" y="3" width="7" height="7" rx="1.5"/><rect x="3" y="14" width="7" height="7" rx="1.5"/><rect x="14" y="14" width="7" height="7" rx="1.5"/></svg>
+    </button>
+    <button class="rail-btn" data-view="topologia" title="Topología VLSM">
+      <svg viewBox="0 0 24 24"><circle cx="12" cy="5" r="2.4"/><circle cx="5" cy="18" r="2.4"/><circle cx="19" cy="18" r="2.4"/><path d="M12 7.4 6.4 15.8M12 7.4l5.6 8.4M7.4 18h9.2"/></svg>
+    </button>
+    <button class="rail-btn" data-view="asignacion" title="Asignación de subredes">
+      <svg viewBox="0 0 24 24"><rect x="3" y="4" width="18" height="16" rx="2"/><path d="M3 9h18M3 14.5h18M9 4v16"/></svg>
+    </button>
+    <button class="rail-btn" data-view="consola" title="Consola de routers">
+      <svg viewBox="0 0 24 24"><rect x="3" y="4" width="18" height="16" rx="2"/><path d="M7 9.5l3 2.5-3 2.5M12.5 15H17"/></svg>
+    </button>
+    <button class="rail-btn" data-view="aprender" title="Aprender: de cero a avanzado">
+      <svg viewBox="0 0 24 24"><path d="M12 4 2 9l10 5 10-5-10-5z"/><path d="M6 11.5V16c0 1.6 2.7 3 6 3s6-1.4 6-3v-4.5"/></svg>
+    </button>
+    <button class="rail-btn" data-view="acerca" title="Acerca de">
+      <svg viewBox="0 0 24 24"><circle cx="12" cy="12" r="9"/><path d="M12 11v5.5M12 7.6v.2"/></svg>
+    </button>
+  </aside>
+
+  <!-- ============ CONTENIDO PRINCIPAL ============ -->
+  <main class="main">
+    <header class="topbar">
+      <div class="brand"><span class="brand-ico">◈</span> NetQuest <span class="brand-tag">clone</span></div>
+      <div class="topbar-meta" id="topbar-meta">ejercicio de subnetting</div>
+    </header>
+
+    <!-- ---------- VIEW: CLÁSICO ---------- -->
+    <section class="view" id="view-clasico">
+      <div class="hero">
+        <h1>Subnetting clásico</h1>
+        <p>Divide una red con clase en subredes de igual tamaño y completa tu plano de direcciones.</p>
+      </div>
+
+      <div class="fields">
+        <label class="field">
+          <span>RED BASE</span>
+          <input id="cb-base" type="text" value="192.168.23.8/24" spellcheck="false">
+        </label>
+        <div class="field field-class">
+          <span>CLASE</span>
+          <div class="class-chips" id="cb-chips">
+            <button type="button" data-c="A">A</button>
+            <button type="button" data-c="B">B</button>
+            <button type="button" data-c="C" class="active">C</button>
+          </div>
+        </div>
+        <label class="field">
+          <span>DIVIDIR EN</span>
+          <select id="cb-prefix"></select>
+        </label>
+        <div class="field field-info">
+          <span>SUBREDES</span>
+          <b id="cb-count">4</b>
+        </div>
+        <div class="field field-info">
+          <span>TAMAÑO</span>
+          <b id="cb-size">62 hosts</b>
+        </div>
+      </div>
+
+      <div class="strip" id="cb-strip" title="Visualización de la división"></div>
+      <div class="legend">
+        <span><i class="dot d-red"></i>dirección de red</span>
+        <span><i class="dot d-bcast"></i>broadcast</span>
+        <span><i class="dot d-first"></i>1ª usable</span>
+        <span><i class="dot d-last"></i>última usable</span>
+      </div>
+
+      <div class="table-wrap">
+        <table class="grid" id="cb-table">
+          <thead>
+            <tr>
+              <th class="num">#</th>
+              <th>SUBRED</th>
+              <th>DIRECCIÓN DE RED</th>
+              <th>MÁSCARA</th>
+              <th>1ª USABLE</th>
+              <th>ÚLTIMA USABLE</th>
+              <th>BROADCAST</th>
+            </tr>
+          </thead>
+          <tbody></tbody>
+        </table>
+      </div>
+    </section>
+
+    <!-- ---------- VIEW: TOPOLOGÍA ---------- -->
+    <section class="view hidden" id="view-topologia">
+      <div class="hero">
+        <h1>Topología VLSM</h1>
+        <p>Distribuye la red base entre los segmentos con VLSM y revisa la partición del espacio.</p>
+      </div>
+
+      <div class="topo-head">
+        <input class="topo-base-in" id="topo-base" value="172.16.0.0/16" spellcheck="false" title="Red base (editable)">
+        <select id="topo-mode" title="Ejercicio">
+          <option value="pizarra">Ejercicio pizarra (uni)</option>
+          <option value="random">Aleatorio</option>
+          <option value="custom">📌 Mi ejercicio</option>
+        </select>
+        <button class="btn" id="cx-open" title="Crear tu propio ejercicio (routers, nombres, interfaces y clase)">➕ Crear ejercicio</button>
+        <span class="topo-sub" id="topo-sub">3 routers · 11 segmentos</span>
+      </div>
+
+      <!-- ============ CREADOR DE EJERCICIOS ============ -->
+      <div class="builder hidden" id="builder">
+        <div class="build-head">
+          <b>CREAR EJERCICIO</b>
+          <span>define la cantidad de routers, sus nombres, interfaces (hosts por LAN) y la clase de la red base</span>
+        </div>
+        <div class="build-row">
+          <div class="bf">
+            <span>CLASE DE RED</span>
+            <div class="class-chips" id="cx-class">
+              <button type="button" data-c="A">A</button>
+              <button type="button" data-c="B" class="active">B</button>
+              <button type="button" data-c="C">C</button>
+            </div>
+          </div>
+          <label class="bf">
+            <span>RED BASE</span>
+            <input id="cx-base" value="172.16.0.0/16" spellcheck="false" title="Debe coincidir con la clase elegida">
+          </label>
+          <label class="bf">
+            <span>ROUTERS</span>
+            <input id="cx-n" type="number" min="1" max="6" value="3" title="Cantidad de routers (1–6)">
+          </label>
+          <label class="bf check">
+            <input type="checkbox" id="cx-serial" checked>
+            <i>enlaces seriales entre routers (A–B–C…)</i>
+          </label>
+        </div>
+        <div class="cx-routers" id="cx-routers"></div>
+        <div class="build-actions">
+          <button class="btn primary" id="cx-create">Crear ejercicio ▸</button>
+          <span class="build-msg" id="cx-msg"></span>
+        </div>
+      </div>
+
+      <div class="topo-canvas">
+        <svg id="topo-svg" viewBox="0 0 1000 380" preserveAspectRatio="xMidYMid meet"></svg>
+      </div>
+
+      <div class="partition">
+        <div class="partition-head">
+          <b>PARTICIÓN DEL ESPACIO</b>
+          <span id="part-stat">ASIGNADO: 0 / 4096 (0 %)</span>
+        </div>
+        <div class="bar" id="part-bar"></div>
+        <div class="part-legend" id="part-legend"></div>
+      </div>
+    </section>
+
+    <!-- ---------- VIEW: ASIGNACIÓN ---------- -->
+    <section class="view hidden" id="view-asignacion">
+      <div class="hero">
+        <h1>Asignación de subredes</h1>
+        <p>Escribe la dirección de red y la máscara de cada segmento. Las GTL y el broadcast se calculan solos.</p>
+      </div>
+
+      <div class="assign-head">
+        <span id="asig-needed">espacio necesario: 0 de 4096</span>
+        <span id="asig-status">0 de 10 segmentos asignados</span>
+      </div>
+
+      <div class="table-wrap">
+        <table class="grid" id="asig-table">
+          <thead>
+            <tr>
+              <th>SEGMENTO</th>
+              <th>HOSTS</th>
+              <th>PREFIJO</th>
+              <th>DIRECCIÓN DE RED</th>
+              <th>MÁSCARA</th>
+              <th>1ª GTL</th>
+              <th>ÚLTIMA GTL</th>
+              <th>BROADCAST</th>
+            </tr>
+          </thead>
+          <tbody></tbody>
+        </table>
+      </div>
+    </section>
+
+    <!-- ---------- VIEW: CONSOLA ---------- -->
+    <section class="view hidden" id="view-consola">
+      <div class="hero">
+        <h1>Consola de routers</h1>
+        <p>Direcciona las interfaces con comandos tipo Cisco. Escribe <code>ayuda</code> para ver los comandos.</p>
+      </div>
+      <div class="console-grid">
+        <div class="term-col">
+          <div class="term-tabs" id="term-tabs"></div>
+          <div class="term" id="term">
+            <div class="term-out" id="term-out"></div>
+            <div class="term-in">
+              <span class="term-prompt" id="term-prompt">Router_A#</span>
+              <input id="term-input" type="text" autocomplete="off" spellcheck="false" autofocus>
+            </div>
+          </div>
+        </div>
+        <aside class="plan-card card">
+          <h3>Plan IP · <span id="plan-router">Router_A</span></h3>
+          <div id="plan-list"></div>
+          <p class="plan-note">La <b>GTL</b> (gateway) es la primera IP útil de cada subred. En los enlaces seriales usa una IP de la subred punto a punto con su máscara.</p>
+        </aside>
+      </div>
+    </section>
+
+    <!-- ---------- VIEW: APRENDER ---------- -->
+    <section class="view hidden" id="view-aprender">
+      <div class="hero">
+        <h1>Aprender: de cero a avanzado</h1>
+        <p>10 lecciones con animaciones y ejercicios interactivos. Cada lección se desbloquea al aprobar la anterior: de no saber nada a dominar subnetting.</p>
+      </div>
+      <div class="learn-grid">
+        <aside class="learn-list">
+          <div class="learn-progress">
+            <b id="learn-pct">0 %</b>
+            <span>CONOCIMIENTO</span>
+            <div class="lp-bar"><i id="learn-bar" style="width:0%"></i></div>
+            <small id="learn-count">0 / 10 lecciones</small>
+          </div>
+          <div id="learn-items"></div>
+        </aside>
+        <div class="learn-main" id="learn-main">
+          <div class="learn-empty">
+            <p>👋 Elige la primera lección para empezar.</p>
+            <p class="muted">Vas a pasar de <b>“¿qué es una IP?”</b> a resolver VLSM y configurar routers como en tu clase.</p>
+          </div>
+        </div>
+      </div>
+    </section>
+
+    <!-- ---------- VIEW: ACERCA ---------- -->
+    <section class="view hidden" id="view-acerca">
+      <div class="hero">
+        <h1>Acerca de NetQuest</h1>
+        <p>Práctica de subnetting IPv4: subnetting clásico, VLSM, plan de direcciones y consola de routers.</p>
+      </div>
+      <div class="about">
+        <div class="card">
+          <h3>Modos</h3>
+          <ul>
+            <li><b>Subnetting clásico</b> — divide una red con clase en subredes de igual tamaño.</li>
+            <li><b>Topología VLSM</b> — diagrama y partición del espacio de direcciones.</li>
+            <li><b>Asignación de subredes</b> — plan de direcciones por segmento.</li>
+            <li><b>Consola</b> — direccionamiento de interfaces tipo IOS.</li>
+            <li><b>Mi ejercicio</b> — crea tu propio reto: cantidad de routers, nombres, hosts por interfaz y clase A/B/C.</li>
+            <li><b>Aprender</b> — curso de cero a avanzado con animaciones, ejercicios y examen final.</li>
+          </ul>
+        </div>
+        <div class="card">
+          <h3>Atajos</h3>
+          <ul>
+            <li><b>Verificar</b> — revisa tus respuestas y muestra el análisis.</li>
+            <li><b>Pista</b> — pista contextual del ejercicio.</li>
+            <li><b>Mostrar solución</b> — rellena la respuesta correcta.</li>
+            <li><b>Nueva red / Nueva topología</b> — regenera el ejercicio.</li>
+          </ul>
+        </div>
+      </div>
+    </section>
+
+    <footer class="statusbar">
+      <span>PARTICIÓN DEL ESPACIO · <b id="status-base">172.16.0.0/16</b></span>
+      <span id="status-msg">listo</span>
+      <span>NetQuest clone · subnetting IPv4</span>
+    </footer>
+  </main>
+
+  <!-- ============ PANEL DERECHO ============ -->
+  <aside class="side">
+    <div class="diff-tabs" id="diff-tabs">
+      <button data-diff="facil">Fácil</button>
+      <button data-diff="medio" class="active">Medio</button>
+      <button data-diff="oficial">Oficial</button>
+    </div>
+
+    <div class="stats" id="stats">
+      <div class="stat"><b id="st-check">0/0</b><span>CHEQUEOS</span></div>
+      <div class="stat"><b id="st-rtx">0</b><span>RTX PREDECIDOS</span></div>
+      <div class="stat"><b id="st-hosts">0</b><span>HOSTS ÚTILES</span></div>
+    </div>
+
+    <div class="actions">
+      <button id="side-toggle" type="button" aria-label="Desplegar u ocultar el panel">▾</button>
+      <button class="btn primary" id="btn-verificar">Verificar</button>
+      <button class="btn" id="btn-pista">Pista</button>
+      <button class="btn" id="btn-solucion">Mostrar solución</button>
+      <button class="btn" id="btn-nueva">Nueva red</button>
+    </div>
+
+    <div class="card analysis">
+      <h3>Análisis</h3>
+      <p id="analysis-text">Completa los campos y verifica para ver indicaciones.</p>
+      <ul id="analysis-list"></ul>
+    </div>
+  </aside>
+</div>
+
+<script src="app.js"></script>
+</body>
+</html>
