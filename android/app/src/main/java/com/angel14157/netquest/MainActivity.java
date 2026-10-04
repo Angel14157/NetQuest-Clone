@@ -2,10 +2,10 @@ package com.angel14157.netquest;
 
 import android.annotation.SuppressLint;
 import android.app.Activity;
+import android.graphics.Insets;
 import android.os.Build;
 import android.os.Bundle;
 import android.view.KeyEvent;
-import android.view.View;
 import android.view.WindowInsets;
 import android.webkit.WebSettings;
 import android.webkit.WebView;
@@ -25,17 +25,6 @@ public class MainActivity extends Activity {
         super.onCreate(savedInstanceState);
 
         web = new WebView(this);
-        /* La app NO debe dibujarse debajo de la hora/batería ni de los botones
-           de atrás/inicio: las barras del sistema se convierten en padding. */
-        web.setFitsSystemWindows(true);
-        if (Build.VERSION.SDK_INT >= Build.VERSION_CODES.R) {
-            getWindow().setDecorFitsSystemWindows(true);
-            web.setOnApplyWindowInsetsListener((View v, WindowInsets insets) -> {
-                android.graphics.Insets sb = insets.getInsets(WindowInsets.Type.systemBars());
-                v.setPadding(sb.left, sb.top, sb.right, sb.bottom);
-                return insets;
-            });
-        }
         setContentView(web);
 
         WebSettings s = web.getSettings();
@@ -51,11 +40,33 @@ public class MainActivity extends Activity {
         web.setBackgroundColor(0xFF0B0D13);       // fondo oscuro al arrancar (sin "flash" blanco)
         web.setWebViewClient(new WebViewClient());
 
+        applySystemInsets();
+
         if (savedInstanceState == null) {
             web.loadUrl("file:///android_asset/index.html");
         } else {
             web.restoreState(savedInstanceState);
         }
+    }
+
+    /**
+     * La app NO se dibuja debajo de las barras del sistema (hora/batería arriba,
+     * gestos/inicio abajo): la ventana queda "a sangre" y nosotros aplicamos la
+     * altura de las barras como margen real del WebView. Se escucha en la vista
+     * raíz de la ventana, que siempre recibe los insets completos.
+     */
+    private void applySystemInsets() {
+        if (Build.VERSION.SDK_INT < Build.VERSION_CODES.R) return;  // pre-Android 11: decor ya los aplica
+        getWindow().setDecorFitsSystemWindows(false);
+        getWindow().getDecorView().setOnApplyWindowInsetsListener((v, insets) -> {
+            int mask = WindowInsets.Type.systemBars() | WindowInsets.Type.displayCutout();
+            Insets m = insets.getInsets(mask);
+            // margen por barras del sistema y, si está abierto, por el teclado
+            // (así ningún botón ni input queda debajo de nada)
+            Insets ime = insets.getInsets(WindowInsets.Type.ime());
+            web.setPadding(m.left, m.top, m.right, Math.max(m.bottom, ime.bottom));
+            return insets;
+        });
     }
 
     @Override
