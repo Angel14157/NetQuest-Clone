@@ -2,8 +2,11 @@ package com.angel14157.netquest;
 
 import android.annotation.SuppressLint;
 import android.app.Activity;
+import android.os.Build;
 import android.os.Bundle;
 import android.view.KeyEvent;
+import android.view.View;
+import android.view.WindowInsets;
 import android.webkit.WebSettings;
 import android.webkit.WebView;
 import android.webkit.WebViewClient;
@@ -22,6 +25,17 @@ public class MainActivity extends Activity {
         super.onCreate(savedInstanceState);
 
         web = new WebView(this);
+        /* La app NO debe dibujarse debajo de la hora/batería ni de los botones
+           de atrás/inicio: las barras del sistema se convierten en padding. */
+        web.setFitsSystemWindows(true);
+        if (Build.VERSION.SDK_INT >= Build.VERSION_CODES.R) {
+            getWindow().setDecorFitsSystemWindows(true);
+            web.setOnApplyWindowInsetsListener((View v, WindowInsets insets) -> {
+                android.graphics.Insets sb = insets.getInsets(WindowInsets.Type.systemBars());
+                v.setPadding(sb.left, sb.top, sb.right, sb.bottom);
+                return insets;
+            });
+        }
         setContentView(web);
 
         WebSettings s = web.getSettings();
