@@ -61,12 +61,24 @@ public class MainActivity extends Activity {
         getWindow().getDecorView().setOnApplyWindowInsetsListener((v, insets) -> {
             int mask = WindowInsets.Type.systemBars() | WindowInsets.Type.displayCutout();
             Insets m = insets.getInsets(mask);
-            // margen por barras del sistema y, si está abierto, por el teclado
-            // (así ningún botón ni input queda debajo de nada)
+            // A veces (gestos sin barra declarada, p. ej. ColorOS) el sistema reporta
+            // 0 abajo aunque el indicador de inicio se dibuje ENCIMA del contenido:
+            // se reserva espacio con respaldos hasta encontrar altura real.
+            int bottom = m.bottom;
+            if (bottom == 0) bottom = insets.getStableInsetBottom();
+            if (bottom == 0) bottom = navBarHeight();
+            // margen por barras y, si está abierto, por el teclado:
+            // así ningún botón ni input queda debajo de nada.
             Insets ime = insets.getInsets(WindowInsets.Type.ime());
-            web.setPadding(m.left, m.top, m.right, Math.max(m.bottom, ime.bottom));
+            web.setPadding(m.left, m.top, m.right, Math.max(bottom, ime.bottom));
             return insets;
         });
+    }
+
+    /** Altura declarada de la barra de navegación en el recurso del sistema (puede ser 0). */
+    private int navBarHeight() {
+        int id = getResources().getIdentifier("navigation_bar_height", "dimen", "android");
+        return id > 0 ? getResources().getDimensionPixelSize(id) : 0;
     }
 
     @Override

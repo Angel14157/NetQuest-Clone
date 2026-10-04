@@ -507,7 +507,6 @@ td .pill{
   .topbar{display:none}               /* la cabecera ahora es la barra superior */
   /* sin panel lateral: ancho completo y sin hueco bajo (no hay hoja que plegar) */
   .app.side-off{grid-template-columns:1fr}
-  .app.side-off .statusbar{margin-bottom:0}
 
   .side{
     position:fixed;left:0;right:0;bottom:0;top:auto;
@@ -541,7 +540,10 @@ td .pill{
   #btn-solucion::after{content:"Solución";font-size:13px}
   .side .actions{overflow-x:auto}
   .side:not(.open) #btn-nueva{display:none}
-  .statusbar{margin-bottom:56px}          /* deja libre la hoja plegada */
+  /* la barra de estado de texto (partición/clase/proyecto) solo estorba en móvil */
+  .statusbar{display:none}
+  /* con la hoja plegada ocupando los 56px de abajo, el contenido pasa por encima */
+  .app:not(.side-off) .view{padding-bottom:104px}
 
   /* Chrome móvil hace zoom automático con fuentes <16px */
   input,select,textarea{font-size:16px!important}

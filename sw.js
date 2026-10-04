@@ -4,7 +4,7 @@
    sube CACHE a 'netquest-v2', 'netquest-v3'... para que los
    dispositivos con la app instalada descarguen los cambios.
    ============================================================ */
-const CACHE = 'netquest-v5';
+const CACHE = 'netquest-v6';
 
 const ASSETS = [
   './',
